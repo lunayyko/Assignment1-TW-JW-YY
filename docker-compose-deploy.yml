@@ -1,0 +1,36 @@
+version: "3"
+services:
+  aimmo_deploy_db:
+    image: mongo
+    container_name: aimmo_deploy_db
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./mongodb/database:/data/db
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+  aimmo_deploy_backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-deploy
+    container_name: aimmo_deploy_backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - aimmo_deploy_db
+    restart: always
+    environment:
+      DB_HOST: aimmo_deploy_db
+      DJANGO_SETTINGS_MODULE: aimmo.settings.deploy
+    env_file:
+      - .dockerenv.deploy
+    command:
+      - bash
+      - -c
+      - |
+        python manage.py migrate
+        gunicorn --bind 0.0.0.0:8000 aimmo.wsgi:application
+    volumes:
+      - .:/usr/src/app/

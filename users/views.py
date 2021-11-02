@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views import View
 
 from users.models import User
-from aimmo.settings.local_dev import SECRET_KEY, ALGORITHM
+from django.conf  import settings
 
 
 class SignupView(View):
@@ -55,7 +55,7 @@ class LoginView(View):
             ):
                 return JsonResponse({"MESSAGE": "INVALID_USER"}, status=401)
             
-            access_token = jwt.encode({"id": user.id }, SECRET_KEY , ALGORITHM)
+            access_token = jwt.encode({"id": user.id }, settings.SECRET_KEY , settings.ALGORITHM)
             return JsonResponse({"MESSAGE": "SUCCESS", 'token' : access_token}, status=200)
             
         except KeyError:
