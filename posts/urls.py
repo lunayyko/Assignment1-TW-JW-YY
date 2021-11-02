@@ -1,5 +1,5 @@
 from django.urls import path
-from .views      import PostListCreateView, PostRetrieveDeleteEditView, CommentView
+from .views      import PostListCreateView, PostRetrieveDeleteEditView, CommentView, CommentModifyView
 
 urlpatterns = [
     path("", PostListCreateView.as_view()),
