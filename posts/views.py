@@ -46,6 +46,10 @@ class CommentView(View):
         try:
             data = json.loads(request.body)
             user = request.user
+            parent_comment_id = data.get('parent_comment_id', 0)
+            
+            if parent_comment_id == 0:
+                parent_comment_id = None
 
             if not Post.objects.filter(id=post_id).exists():
                 return JsonResponse({'message':'POST_DOES_NOT_EXIST'}, status=404)
@@ -54,7 +58,7 @@ class CommentView(View):
                 content           = data.get('content', None),
                 user_id           = user.id,
                 post_id           = post_id,
-                parent_comment_id = data.get('parent_comment_id', None)
+                parent_comment_id= parent_comment_id
             )
 
             return JsonResponse({'message':'SUCCESS'}, status=201)
@@ -147,6 +151,8 @@ class PostListCreateView(View):
             .order_by(order_conditions.get(order, 'id'))
 
         post_count = filtered_posts.count()
+
+        filtered_posts = filtered_posts[offset:offset+limit]
     
         posts_list = [{
             'id'         : post.id,
@@ -232,6 +238,9 @@ class PostRetrieveDeleteEditView(View):
 
         except KeyError:
             return JsonResponse({'MESSAGE': 'KEY_ERROR'}, status=400)
+        
+        except JSONDecodeError:
+            return JsonResponse({'MESSAGE': 'VALUE_ERROR'}, status=400)
 
     @login_decorator
     def delete(self, request, post_id):
