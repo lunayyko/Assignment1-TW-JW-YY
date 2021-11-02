@@ -62,25 +62,27 @@ class CommentView(View):
         except JSONDecodeError:
             return JsonResponse({'message':'JSON_DECODE_ERROR'}, status=400)
     
+class CommentModifyView(View):
     @login_decorator
-    def patch(self, request, post_id):
+    def patch(self, request, post_id, comment_id):
         try:
             data        = json.loads(request.body)
 
-            if Comment.objects.filter(post_id=post_id, user_id=request.user.id):
-                Comment.objects.update(
-                    user        = request.user,
-                    post_id     = post_id,
-                    content     = data['content']
+            if not Comment.objects.filter(id=comment_id, user_id=request.user.id).exists():
+                return JsonResponse({'MESSAGE':'NOT_EXISTS'}, status=400)
+
+            Comment.objects.filter(id=comment_id, user_id=request.user.id).update(
+                content   = data['content'],
                 )
-                return JsonResponse({'MESSAGE' : 'COMMENT_UPDATED'}, status=201)
+
+            return JsonResponse({'MESSAGE' : 'COMMENT_UPDATED'}, status=201)
 
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY_ERROR'}, status=400)
 
     @login_decorator
-    def delete(self, request, post_id):
-        comment = Comment.objects.filter(post_id=post_id, user_id=request.user.id)
+    def delete(self, request, post_id, comment_id):
+        comment = Comment.objects.filter(id=comment_id, user_id=request.user.id)
         if not comment.exists():
             return JsonResponse({'MESSAGE' : 'COMMENT_DOES_NOT_EXIST'}, status=400)
 
