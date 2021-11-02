@@ -37,7 +37,7 @@ class CommentView(View):
 
             Comment.objects.create(
                 content           = data.get('content', None),
-                user              = user,
+                user_id           = user.id,
                 post_id           = post_id,
                 parent_comment_id = data.get('parent_comment_id', None)
             )
@@ -86,8 +86,8 @@ class PostListCreateView(View):
             if data['content'] == '':
                 return JsonResponse({'MESSAGE': 'CONTENT_ERROR'}, status=400)
 
-            category_id = int(data['category'], -1)
-            if not Category.objects.filter(category_id=category_id).exists():
+            category_id = int(data.get('category_id', 0))
+            if not Category.objects.filter(id=category_id).exists():
                 return JsonResponse({'MESSAGE': 'CATEGORY_ERROR'}, status=400)
 
             Post.objects.create(
