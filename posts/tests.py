@@ -1,12 +1,138 @@
-import bcrypt, jwt, datetime
+import jwt, bcrypt, datetime
 from unittest import mock
 
 from django.test import TestCase, Client
-from django.conf  import settings
 
-from users.models import User
-from posts.models import Post, Category
+from users.models  import User
+from      .models  import Post, Category, Comment
+from django.conf   import settings
 
+class CommentViewTest(TestCase):
+    maxDiff = None
+
+    def setUp(self):
+        self.test_user = User.objects.create(
+            id=1,
+            name="지원",
+            email="jiwon@mint.com",
+            password="abcde12345@",
+        )
+
+        Category.objects.create(
+            id=1,
+            name="위코드"
+        )
+    
+        Post.objects.create(
+            id=1,
+            user=User.objects.get(id=1),
+            subject="제목1",
+            content="내용1",
+            viewcount = 0,
+            category = Category.objects.get(id=1)
+        )
+        
+        self.mocked_date_time = datetime.datetime(2021,1,1,0,0,0)
+
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=self.mocked_date_time)):
+            Comment.objects.create(
+                id=1,
+                user=User.objects.get(id=1),
+                post=Post.objects.get(id=1),
+                parent_comment_id=None,
+                content = "댓글1"
+            )
+
+            Comment.objects.create(
+                id=2,
+                user=User.objects.get(id=1),
+                post=Post.objects.get(id=1),
+                parent_comment_id=None,
+                content = "댓글2"
+            )
+
+            Comment.objects.create(
+                id=3,
+                user=User.objects.get(id=1),
+                post=Post.objects.get(id=1),
+                parent_comment_id=None,
+                content = "댓글3"
+            )
+
+            Comment.objects.create(
+                id=4,
+                user=User.objects.get(id=1),
+                post=Post.objects.get(id=1),
+                parent_comment_id=None,
+                content = "댓글4"
+            )
+
+            Comment.objects.create(
+                id=5,
+                user=User.objects.get(id=1),
+                post=Post.objects.get(id=1),
+                parent_comment_id=1,
+                content = "댓글1.1"
+            )
+
+            Comment.objects.create(
+                id=6,
+                user=User.objects.get(id=1),
+                post=Post.objects.get(id=1),
+                parent_comment_id=1,
+                content = "댓글1.2"
+            )
+
+    def tearDown(self):
+        Post.objects.all().delete()
+        User.objects.all().delete()
+
+    def test_comment_pagination_success(self):
+        access_token = jwt.encode(
+            {"id": self.test_user.id}, settings.SECRET_KEY, settings.ALGORITHM,
+        )
+
+        client = Client()
+        header = {"HTTP_AUTHORIZATION": access_token}
+
+        response = client.get("/posts/1/comments?parent_id=0&limit=2&offset=0", **header)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+            {
+                "comments": [{
+                "comment_id": 1,
+                "user_id": 1,
+                "email": "jiwon@mint.com",
+                "content": "댓글1",
+                "created_at": self.mocked_date_time.strftime('%Y-%m-%dT%H:%M:%S'),
+                "updated_at": self.mocked_date_time.strftime('%Y-%m-%dT%H:%M:%S'),
+                "parent_id": None
+
+            },
+            {
+                "comment_id": 2,
+                "user_id": 1,
+                "email": "jiwon@mint.com",
+                "content": "댓글2",
+                "created_at": self.mocked_date_time.strftime('%Y-%m-%dT%H:%M:%S'),
+                "updated_at": self.mocked_date_time.strftime('%Y-%m-%dT%H:%M:%S'),
+                "parent_id": None
+            }
+        ]}
+    )
+    def test_user_error(self):
+        access_token = jwt.encode(
+            {"id": self.test_user.id}, settings.SECRET_KEY, settings.ALGORITHM,
+        )[:-1]
+
+        client = Client()
+        header = {"HTTP_AUTHORIZATION": access_token}
+        response = client.get("/posts/1/comments?parent_id=0&limit=2&offset=0", **header)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json(), {"MESSAGE": "INVALID_TOKEN"})
 
 class PostTestCase(TestCase):
     maxDiff = None
