@@ -4,7 +4,7 @@ ALLOWED_HOSTS = ['*']
 
 
 SECRET_KEY = get_env_variable('DJANGO_SECRECT_KEY')
-ALGORITHM = 'hs265'
+ALGORITHM = 'HS256'
 DEBUG      = True
 
 DATABASES = {
