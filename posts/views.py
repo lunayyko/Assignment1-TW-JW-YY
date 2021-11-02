@@ -15,13 +15,27 @@ from users.decorators     import login_decorator
 class CommentView(View):
     @login_decorator
     def get(self, request, post_id):
-        comments = Comment.objects.filter(post_id=post_id).select_related('user').order_by('-id')
+        parent_id = int(request.GET.get("parent_id","0"))
+
+        if parent_id == 0:
+            all_comments = Comment.objects.filter(post_id=post_id, parent_comment__isnull=True).select_related('user')
+        
+        else:
+            all_comments = Comment.objects.filter(post_id=post_id, parent_comment_id=parent_id).select_related('user')
+
+        limit = int(request.GET.get("limit","10"))
+        offset = int(request.GET.get("offset","0"))
+        offset=offset*limit
+        
+        comments  = all_comments[offset:offset+limit]
 
         comment_list = [{   
+                'comment_id' : comment.id,
                 'user_id'    : comment.user_id,
                 'email'      : comment.user.email,
                 'content'    : comment.content,
                 'created_at' : comment.created_at,
+                'updated_at' : comment.updated_at,
                 'parent_id'  : comment.parent_comment_id,
                 } for comment in comments
             ]
