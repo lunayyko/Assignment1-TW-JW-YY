@@ -231,7 +231,7 @@ class PostRetrieveDeleteEditView(View):
             post.category_id = category_id
             post.save()
 
-            return JsonResponse({'MESSAGE': 'SUCCESS'}, status=201)
+            return JsonResponse({'MESSAGE': 'SUCCESS'}, status=200)
 
         except Http404:
             return JsonResponse({'MESSAGE': 'POST_DOSE_NOT_EXIST'}, status=404)
