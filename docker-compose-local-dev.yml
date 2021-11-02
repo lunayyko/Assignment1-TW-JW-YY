@@ -1,0 +1,37 @@
+version: "3"
+services:
+  aimmo_db:
+    image: mongo
+    container_name: aimmo_db
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./mongodb/database:/data/db
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+  aimmo_backend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-local-dev
+    container_name: aimmo_backend
+    ports:
+      - 8000:8000
+    depends_on:
+      - aimmo_db
+    restart: always
+    environment:
+      DB_HOST: aimmo_db
+      DB_PORT: 27017
+      DB_NAME: aimmo
+    env_file:
+      - .dockerenv.local_dev
+    command:
+      - bash
+      - -c
+      - |
+        python manage.py migrate
+        python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app/
