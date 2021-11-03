@@ -46,14 +46,14 @@
 > - ETC :  <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"/>&nbsp;<img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white"/>
 
 ## 모델링
-![stockers ERD drawio (1)](https://user-images.githubusercontent.com/8219812/139912027-38911681-b9d6-4590-9021-6215f0b4d5f8.png)
+![5 drawio](https://user-images.githubusercontent.com/8315252/139969615-38f01f08-cc1c-427e-87a6-09671525525b.png)
 
 ## API
 [링크-postman document](https://documenter.getpostman.com/view/16042359/UVBzmpLX)
 
 ## 구현 기능
 ### 회원가입, 로그인
-- 회원가입시 password 같은 민감정보는 단방향 해쉬 알고리즘인 `bcript`를 이용해서 암호화 하여 database에 저장하였습니다.
+- 회원가입시 password 같은 민감정보는 단방향 해쉬 알고리즘인 `bcrypt`를 이용해서 암호화 하여 database에 저장하였습니다.
 - 로그인이 성공적으로 완료되면, user정보를 토큰으로 반환할때, 양방향 해쉬 알고리즘인 `JWT`를 사용해서 응답을 하였습니다.
 
 ### 게시글 CRUD
