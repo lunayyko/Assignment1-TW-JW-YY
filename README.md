@@ -195,9 +195,7 @@
 ```
 
 ## TIL정리 (Blog)
-- 김태우 :
-- 고유영 :
-- 박지원 :
+[고유영 : 루나의 기술블로그](https://lunayyko.github.io/wecode/2021/11/03/wantedxwecode-1-aimmo/)  
 
 # Reference
 이 프로젝트는 원티드x위코드 백엔드 프리온보딩 과제 일환으로 aimmo에서 출제한 과제를 기반으로 만들었습니다.
