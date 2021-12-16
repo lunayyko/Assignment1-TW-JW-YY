@@ -195,7 +195,7 @@
 ```
 
 ## TIL정리 (Blog)
-[고유영 : 루나의 기술블로그 - 원티드 x 위코드 프리온보딩 과제1 Aimmo(몽고디비대댓글)](https://lunayyko.github.io/wecode/2021/11/03/wantedxwecode-1-aimmo/)  
+[루나의 기술블로그 - 원티드 x 위코드 프리온보딩 과제1 Aimmo(몽고디비대댓글)](https://lunayyko.github.io/wecode/2021/11/03/wantedxwecode-1-aimmo/)  
 
 # Reference
 이 프로젝트는 원티드x위코드 백엔드 프리온보딩 과제 일환으로 aimmo에서 출제한 과제를 기반으로 만들었습니다.
